@@ -29,16 +29,16 @@ class PostRequest extends FormRequest
                 return [
                     'title' => 'required|string',
                     'content' => 'required|string',
-                    'image' => 'required|file',
+                    'image' => 'required|max:1024|mimes:jpeg,jpg,png',
                 ];
             break;
             case 'PUT':
                 return [
                     'title' => 'required|string',
                     'content' => 'required|string',
-                    'image' => 'file',
+                    'image' => 'max:1024|mimes:jpeg,jpg,png',
                 ];
             break;
-        }    
+        }
     }
 }

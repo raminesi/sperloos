@@ -15,12 +15,20 @@ class PostRepository
 
     public function getAllPost()
     {
-        return $this->post->get();
+        $posts = $this->post->get();
+        return $posts;
     }
 
     public function getById($id)
     {
-        return $this->post->where('id' , $id)->get();
+        $post = $this->post->where('id' , $id)->first();
+        $post->getMedia('thumbnail');
+        return array(
+            'id' => $post->id,
+            'title' => $post->title,
+            'content' => $post->content,
+            'thumbnail' => ($post->media[0] ? $post->media[0]->getUrl() : null)
+        );
     }
 
     public function save($data)
@@ -29,6 +37,12 @@ class PostRepository
         $post->title = $data['title'];
         $post->content = $data['content'];
         $post->save();
+        $post->addMediaFromRequest('image')->usingName($data['title'])->toMediaCollection('thumbnail');
+        // $post->addMediaConversion('thumb')
+        // ->width(100)
+        // ->height(100)
+        // ->sharpen(10)
+        // ->nonOptimized();
         return $post->fresh();
     }
 }

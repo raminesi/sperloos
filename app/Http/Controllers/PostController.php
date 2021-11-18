@@ -112,8 +112,8 @@ class PostController extends Controller
      *                }
      *            )
      *        )
-     *    ), 
-     *  
+     *    ),
+     *
      *   @OA\Response(
      *      response=200,
      *       description="Success",
@@ -138,7 +138,17 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        
+        $data = $request->all();
+        $result = ['status' => 200];
+        try{
+            $result['data'] = $this->postService->savePostData($data);
+        }catch(Exception $e){
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result , $result['status']);
     }
 
     /**
@@ -223,7 +233,7 @@ class PostController extends Controller
      *           type="integer"
      *      )
      *   ),
-     * 
+     *
      *   @OA\Parameter(
      *      name="title",
      *      in="query",
@@ -259,8 +269,8 @@ class PostController extends Controller
      *                }
      *            )
      *        )
-     *    ), 
-     *  
+     *    ),
+     *
      *   @OA\Response(
      *      response=200,
      *       description="Success",
