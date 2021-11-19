@@ -24,6 +24,15 @@ class PostController extends Controller
      *   operationId="listPost",
      *   security={ {"bearerAuth":{}}},
      *
+     *   @OA\Parameter(
+     *      name="page",
+     *      in="query",
+     *      example=1,
+     *      @OA\Schema(
+     *           type="integer"
+     *      )
+     *   ),
+     *
      *   @OA\Response(
      *      response=200,
      *       description="Success",
@@ -45,11 +54,11 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $result = ['status' => 200];
         try{
-            $result['data'] = $this->postService->getAll();
+            $result['data'] = $this->postService->getListPost(15);
         }catch(Exception $e){
             $result = [
                 'status' => 500,
@@ -217,8 +226,8 @@ class PostController extends Controller
     }
 
     /**
-     * @OA\Put(
-     *   path="/api/posts/{id}",
+     * @OA\Post(
+     *   path="/api/posts/{id}?_method=put",
      *   tags={"Post"},
      *   summary="Update post",
      *   operationId="updatePost",
@@ -296,7 +305,17 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, $id)
     {
-        //
+        $data = $request->all();
+        $result = ['status' => 200];
+        try{
+            $result['data'] = $this->postService->updatePost($data , $id);
+        }catch(Exception $e){
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result , $result['status']);
     }
 
     /**

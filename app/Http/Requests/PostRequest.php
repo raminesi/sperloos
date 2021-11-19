@@ -36,7 +36,7 @@ class PostRequest extends FormRequest
                 return [
                     'title' => 'required|string',
                     'content' => 'required|string',
-                    'image' => 'max:1024|mimes:jpeg,jpg,png',
+                    'image' => (empty(request('image')) ? '' : 'max:1024|mimes:jpeg,jpg,png')
                 ];
             break;
         }

@@ -130,6 +130,16 @@
                 ],
                 "summary": "List of posts",
                 "operationId": "listPost",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -283,8 +293,10 @@
                         "bearerAuth": []
                     }
                 ]
-            },
-            "put": {
+            }
+        },
+        "/api/posts/{id}?_method=put": {
+            "post": {
                 "tags": [
                     "Post"
                 ],

@@ -13,21 +13,29 @@ class PostRepository
         $this->post = $post;
     }
 
-    public function getAllPost()
+    public function getListPost($limit)
     {
-        $posts = $this->post->get();
+        $list = $this->post->paginate($limit);
+        $posts  = $list->map(function($item){
+            return array(
+                'id' => $item->id,
+                'title' => $item->title,
+                'content' => $item->content,
+                'thumbnail' => (is_null($item->thumbnail) ? null : $item->thumbnail->getUrl('thumb'))
+            );
+        });
         return $posts;
     }
 
     public function getById($id)
     {
         $post = $this->post->where('id' , $id)->first();
-        $post->getMedia('thumbnail');
         return array(
             'id' => $post->id,
             'title' => $post->title,
             'content' => $post->content,
-            'thumbnail' => ($post->media[0] ? $post->media[0]->getUrl() : null)
+            'thumbnail' => (is_null($post->thumbnail) ? null : $post->thumbnail->getUrl('thumb')),
+            'image' => (is_null($post->thumbnail) ? null : $post->thumbnail->getUrl())
         );
     }
 
@@ -38,11 +46,18 @@ class PostRepository
         $post->content = $data['content'];
         $post->save();
         $post->addMediaFromRequest('image')->usingName($data['title'])->toMediaCollection('thumbnail');
-        // $post->addMediaConversion('thumb')
-        // ->width(100)
-        // ->height(100)
-        // ->sharpen(10)
-        // ->nonOptimized();
+        return $post->fresh();
+    }
+
+    public function update($data , $id)
+    {
+        $post = $this->post->find($id);
+        $post->title = $data['title'];
+        $post->content = $data['content'];
+        $post->update();
+        if(!empty($data['image'])){
+            $post->addMediaFromRequest('image')->usingName($data['title'])->toMediaCollection('thumbnail');
+        }
         return $post->fresh();
     }
 }
