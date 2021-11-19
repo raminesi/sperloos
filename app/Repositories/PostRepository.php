@@ -60,4 +60,10 @@ class PostRepository
         }
         return $post->fresh();
     }
+
+    public function delete($id)
+    {
+        $this->post->where('id' , $id)->delete();
+        return null;
+    }
 }

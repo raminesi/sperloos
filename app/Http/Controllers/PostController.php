@@ -14,6 +14,11 @@ class PostController extends Controller
     public function __construct(PostService $postService)
     {
         $this->postService = $postService;
+        $this->middleware('checkUser', [
+            'only' => [
+                'store','update','destroy'
+            ]
+        ]);
     }
 
     /**
@@ -318,6 +323,41 @@ class PostController extends Controller
         return response()->json($result , $result['status']);
     }
 
+
+    /**
+     * @OA\Delete(
+     *   path="/api/posts/{id}",
+     *   tags={"Post"},
+     *   summary="Delete post",
+     *   operationId="deletePost",
+     *   security={ {"bearerAuth":{}}},
+     *
+     *   @OA\Parameter(
+     *      name="id",
+     *      in="path",
+     *      required=true,
+     *      example=1,
+     *      @OA\Schema(
+     *           type="integer"
+     *      )
+     *   ),
+     *
+     *   @OA\Response(
+     *      response=200,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *    response=401,
+     *    description="Returns when user is not authenticated",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example=""),
+     *    )
+     *   ),
+     *)
+     **/
     /**
      * Remove the specified resource from storage.
      *
@@ -326,6 +366,15 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = ['status' => 200];
+        try{
+            $result['data'] = $this->postService->deletePost($id);
+        }catch(Exception $e){
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result , $result['status']);
     }
 }

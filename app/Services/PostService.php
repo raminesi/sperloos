@@ -32,4 +32,9 @@ class PostService
     {
         return $this->postRepository->update($data , $id);
     }
+
+    public function deletePost($id)
+    {
+        return $this->postRepository->delete($id);
+    }
 }
